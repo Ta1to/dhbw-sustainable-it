@@ -1,6 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { products } from "../lib/products";
+import { getProducts } from "../lib/products";
+
+const products = getProducts();
 ---
 
 <Layout title="Cart — astro">

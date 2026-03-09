@@ -1,16 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { products } from "../lib/products";
+import { getProducts } from "../lib/products";
 
+const products = getProducts();
 const featured = products[0];
 ---
 
 <Layout title="astro — Shop">
   <div class="hero">
     <div class="hero-text">
-      <h1>Spring Collection</h1>
-      <p>Discover our hand-picked selection of premium tech accessories and everyday essentials.</p>
-      <a href="/products" class="btn btn-primary">Explore</a>
+      <h1>New Arrivals</h1>
+      <p>Shop the latest trends — carefully curated products for your lifestyle.</p>
+      <a href="/products" class="btn btn-primary">Shop Now</a>
     </div>
     <div class="hero-img">
       <img src={featured.image} alt={featured.name} />

@@ -1,10 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { products, getProductById } from "../../lib/products";
-
-export function getStaticPaths() {
-  return products.map((p) => ({ params: { id: String(p.id) } }));
-}
+import { getProductById } from "../../lib/products";
 
 const { id } = Astro.params;
 const product = getProductById(Number(id));

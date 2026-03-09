@@ -1,0 +1,14 @@
+{
+  "name": "database",
+  "type": "module",
+  "scripts": {
+    "seed": "npx tsx seed.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "tsx": "^4.0.0"
+  }
+}
