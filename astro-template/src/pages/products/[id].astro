@@ -27,13 +27,14 @@ if (!product) return Astro.redirect("/");
 </Layout>
 
 <script>
+  import { getCart, saveCart } from "../../lib/cart";
+
   const btn = document.getElementById("add-to-cart") as HTMLButtonElement;
   const feedback = document.getElementById("feedback") as HTMLElement;
 
   btn.addEventListener("click", () => {
     const productId = Number(btn.dataset.id);
-    const raw = sessionStorage.getItem("cart");
-    const cart: { id: number; qty: number }[] = raw ? JSON.parse(raw) : [];
+    const cart = getCart();
 
     const existing = cart.find((item) => item.id === productId);
     if (existing) {
@@ -42,8 +43,7 @@ if (!product) return Astro.redirect("/");
       cart.push({ id: productId, qty: 1 });
     }
 
-    sessionStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cart-updated"));
+    saveCart(cart);
 
     feedback.style.display = "block";
     setTimeout(() => (feedback.style.display = "none"), 2000);

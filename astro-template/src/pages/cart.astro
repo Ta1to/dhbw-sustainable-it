@@ -11,18 +11,18 @@ const products = getProducts();
     <span id="cart-count" class="cart-count"></span>
   </div>
 
-  <div id="empty-state" style="display:none">
+  <div id="empty-state" hidden>
     <p class="muted">Your cart is empty. <a href="/products">Continue shopping</a></p>
   </div>
 
-  <div id="cart-content" style="display:none">
+  <div id="cart-content" hidden>
     <table>
       <thead>
         <tr>
-          <th>Produkt</th>
-          <th>Preis</th>
-          <th>Menge</th>
-          <th>Gesamt</th>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
           <th></th>
         </tr>
       </thead>
@@ -30,7 +30,7 @@ const products = getProducts();
     </table>
 
     <div class="summary">
-      <span>Gesamt</span>
+      <span>Total</span>
       <strong id="cart-total">0.00€</strong>
     </div>
 
@@ -59,6 +59,59 @@ const products = getProducts();
     window.dispatchEvent(new Event("cart-updated"));
   }
 
+  function createRow(product, item) {
+    const lineTotal = product.price * item.qty;
+
+    const a = document.createElement("a");
+    a.href = `/products/${product.id}`;
+    a.className = "product-link";
+    const img = document.createElement("img");
+    img.src = product.image;
+    img.alt = product.name;
+    img.className = "thumb";
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "product-name";
+    nameSpan.textContent = product.name;
+    a.append(img, nameSpan);
+    const tdProduct = document.createElement("td");
+    tdProduct.appendChild(a);
+
+    const tdPrice = document.createElement("td");
+    tdPrice.textContent = formatPrice(product.price);
+
+    const btnDec = document.createElement("button");
+    btnDec.className = "qty-btn";
+    btnDec.dataset.id = String(product.id);
+    btnDec.dataset.action = "dec";
+    btnDec.textContent = "−";
+    const qtySpan = document.createElement("span");
+    qtySpan.textContent = String(item.qty);
+    const btnInc = document.createElement("button");
+    btnInc.className = "qty-btn";
+    btnInc.dataset.id = String(product.id);
+    btnInc.dataset.action = "inc";
+    btnInc.textContent = "+";
+    const qtyDiv = document.createElement("div");
+    qtyDiv.className = "qty-ctrl";
+    qtyDiv.append(btnDec, qtySpan, btnInc);
+    const tdQty = document.createElement("td");
+    tdQty.appendChild(qtyDiv);
+
+    const tdLineTotal = document.createElement("td");
+    tdLineTotal.textContent = formatPrice(lineTotal);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "btn btn-danger remove-btn";
+    removeBtn.dataset.id = String(product.id);
+    removeBtn.textContent = "Remove";
+    const tdRemove = document.createElement("td");
+    tdRemove.appendChild(removeBtn);
+
+    const tr = document.createElement("tr");
+    tr.append(tdProduct, tdPrice, tdQty, tdLineTotal, tdRemove);
+    return { tr, lineTotal };
+  }
+
   function render() {
     const cart = getCart();
     const empty = document.getElementById("empty-state");
@@ -68,16 +121,16 @@ const products = getProducts();
     const countEl = document.getElementById("cart-count");
 
     const totalItems = cart.reduce((s, i) => s + i.qty, 0);
-    if (countEl) countEl.textContent = totalItems > 0 ? `You have ${totalItems} item${totalItems !== 1 ? "s" : ""} in your cart` : "";
+    if (countEl) countEl.textContent = totalItems > 0 ? `${totalItems} item${totalItems !== 1 ? "s" : ""} in your cart` : "";
 
     if (cart.length === 0) {
-      empty.style.display = "block";
-      content.style.display = "none";
+      empty.hidden = false;
+      content.hidden = true;
       return;
     }
 
-    empty.style.display = "none";
-    content.style.display = "block";
+    empty.hidden = true;
+    content.hidden = false;
 
     let total = 0;
     tbody.innerHTML = "";
@@ -85,30 +138,8 @@ const products = getProducts();
     cart.forEach((item) => {
       const product = products.find((p) => p.id === item.id);
       if (!product) return;
-      const lineTotal = product.price * item.qty;
+      const { tr, lineTotal } = createRow(product, item);
       total += lineTotal;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>
-          <a href="/products/${product.id}" class="product-link">
-            <img src="${product.image}" alt="${product.name}" class="thumb" />
-            <span class="product-name">${product.name}</span>
-          </a>
-        </td>
-        <td>${formatPrice(product.price)}</td>
-        <td>
-          <div class="qty-ctrl">
-            <button class="qty-btn" data-id="${product.id}" data-action="dec">−</button>
-            <span>${item.qty}</span>
-            <button class="qty-btn" data-id="${product.id}" data-action="inc">+</button>
-          </div>
-        </td>
-        <td>${formatPrice(lineTotal)}</td>
-        <td>
-          <button class="btn btn-danger remove-btn" data-id="${product.id}">Entfernen</button>
-        </td>
-      `;
       tbody.appendChild(tr);
     });
 
@@ -116,9 +147,7 @@ const products = getProducts();
 
     tbody.querySelectorAll(".remove-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const id = Number(btn.dataset.id);
-        const updated = getCart().filter((i) => i.id !== id);
-        saveCart(updated);
+        saveCart(getCart().filter((i) => i.id !== Number(btn.dataset.id)));
         render();
       });
     });
@@ -138,7 +167,7 @@ const products = getProducts();
 
   render();
 
-  document.getElementById("checkout-btn").addEventListener("click", () => {
+  document.getElementById("checkout-btn")?.addEventListener("click", () => {
     alert("Checkout is not implemented in this demo.");
   });
 </script>

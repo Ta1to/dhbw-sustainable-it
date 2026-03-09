@@ -3,7 +3,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const db = new Database(path.resolve(__dirname, "../../../database/shop.db"), { readonly: true });
+const dbPath = path.resolve(__dirname, "../../../database/shop.db");
+const db = new Database(dbPath, { readonly: true });
 
 export interface Product {
   id: number;

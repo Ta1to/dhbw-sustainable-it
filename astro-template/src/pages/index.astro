@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { getProducts } from "../lib/products";
 
 const products = getProducts();
-const featured = products[0];
+const featured = products[2];
 ---
 
 <Layout title="astro — Shop">
@@ -14,7 +14,7 @@ const featured = products[0];
       <a href="/products" class="btn btn-primary">Shop Now</a>
     </div>
     <div class="hero-img">
-      <img src={featured.image} alt={featured.name} />
+      {featured && <img src={featured.image} alt={featured.name} />}
     </div>
   </div>
 </Layout>

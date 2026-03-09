@@ -5,11 +5,12 @@ interface Props {
 const { title = "Shop" } = Astro.props;
 ---
 
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Shop the latest trends — carefully curated products for your lifestyle." />
     <title>{title}</title>
   </head>
   <body>
@@ -29,9 +30,10 @@ const { title = "Shop" } = Astro.props;
     </main>
 
     <script>
+      import { getCart } from "../lib/cart";
+
       function updateBadge() {
-        const raw = sessionStorage.getItem("cart");
-        const cart: { id: number; qty: number }[] = raw ? JSON.parse(raw) : [];
+        const cart = getCart();
         const total = cart.reduce((sum, item) => sum + item.qty, 0);
         const badge = document.getElementById("cart-badge");
         if (badge) {
