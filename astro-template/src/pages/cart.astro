@@ -1,0 +1,246 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { products } from "../lib/products";
+---
+
+<Layout title="Cart — astro">
+  <div class="cart-header">
+    <h1>Shopping Cart</h1>
+    <span id="cart-count" class="cart-count"></span>
+  </div>
+
+  <div id="empty-state" style="display:none">
+    <p class="muted">Your cart is empty. <a href="/products">Continue shopping</a></p>
+  </div>
+
+  <div id="cart-content" style="display:none">
+    <table>
+      <thead>
+        <tr>
+          <th>Produkt</th>
+          <th>Preis</th>
+          <th>Menge</th>
+          <th>Gesamt</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="cart-rows"></tbody>
+    </table>
+
+    <div class="summary">
+      <span>Gesamt</span>
+      <strong id="cart-total">0.00€</strong>
+    </div>
+
+    <div class="actions">
+      <a href="/products" class="btn btn-outline">Continue shopping</a>
+      <button class="btn btn-primary" id="checkout-btn">Proceed to checkout</button>
+    </div>
+  </div>
+</Layout>
+
+<script define:vars={{ products }}>
+  function formatPrice(n) {
+    return n.toFixed(2) + "€";
+  }
+
+  function getCart() {
+    try {
+      return JSON.parse(sessionStorage.getItem("cart") || "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  function saveCart(cart) {
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cart-updated"));
+  }
+
+  function render() {
+    const cart = getCart();
+    const empty = document.getElementById("empty-state");
+    const content = document.getElementById("cart-content");
+    const tbody = document.getElementById("cart-rows");
+    const totalEl = document.getElementById("cart-total");
+    const countEl = document.getElementById("cart-count");
+
+    const totalItems = cart.reduce((s, i) => s + i.qty, 0);
+    if (countEl) countEl.textContent = totalItems > 0 ? `You have ${totalItems} item${totalItems !== 1 ? "s" : ""} in your cart` : "";
+
+    if (cart.length === 0) {
+      empty.style.display = "block";
+      content.style.display = "none";
+      return;
+    }
+
+    empty.style.display = "none";
+    content.style.display = "block";
+
+    let total = 0;
+    tbody.innerHTML = "";
+
+    cart.forEach((item) => {
+      const product = products.find((p) => p.id === item.id);
+      if (!product) return;
+      const lineTotal = product.price * item.qty;
+      total += lineTotal;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>
+          <a href="/products/${product.id}" class="product-link">
+            <img src="${product.image}" alt="${product.name}" class="thumb" />
+            <span>${product.name}</span>
+          </a>
+        </td>
+        <td>${formatPrice(product.price)}</td>
+        <td>
+          <div class="qty-ctrl">
+            <button class="qty-btn" data-id="${product.id}" data-action="dec">−</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" data-id="${product.id}" data-action="inc">+</button>
+          </div>
+        </td>
+        <td>${formatPrice(lineTotal)}</td>
+        <td>
+          <button class="btn btn-danger remove-btn" data-id="${product.id}">Entfernen</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    totalEl.textContent = formatPrice(total);
+
+    tbody.querySelectorAll(".remove-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.dataset.id);
+        const updated = getCart().filter((i) => i.id !== id);
+        saveCart(updated);
+        render();
+      });
+    });
+
+    tbody.querySelectorAll(".qty-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.dataset.id);
+        const action = btn.dataset.action;
+        const updated = getCart()
+          .map((i) => i.id === id ? { ...i, qty: i.qty + (action === "inc" ? 1 : -1) } : i)
+          .filter((i) => i.qty > 0);
+        saveCart(updated);
+        render();
+      });
+    });
+  }
+
+  render();
+
+  document.getElementById("checkout-btn").addEventListener("click", () => {
+    alert("Kasse noch nicht implementiert");
+  });
+</script>
+
+<style>
+  .cart-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cart-header h1 { margin: 0; }
+
+  .cart-count {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .muted { color: var(--muted); font-size: 0.9rem; }
+  .muted a { color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 1rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: 500;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  .product-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-link:hover span { color: var(--muted); }
+
+  .thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  .qty-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+  }
+
+  .qty-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .qty-btn:hover { border-color: var(--muted); }
+
+  .summary {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .summary strong { font-size: 1.2rem; color: var(--text); font-weight: 600; }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+</style>

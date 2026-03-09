@@ -1,0 +1,116 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { products, getProductById } from "../../lib/products";
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { id: String(p.id) } }));
+}
+
+const { id } = Astro.params;
+const product = getProductById(Number(id));
+if (!product) return Astro.redirect("/");
+---
+
+<Layout title={`${product.name} — astro`}>
+  <a href="/products" class="btn btn-outline back-link">Products</a>
+
+  <div class="detail">
+    <div class="detail-img">
+      <img src={product.image} alt={product.name} />
+    </div>
+    <div class="info">
+      <h1>{product.name}</h1>
+      <p class="desc">{product.description}</p>
+      <p class="price">{product.price.toFixed(2)}€</p>
+      <button class="btn btn-primary" id="add-to-cart" data-id={product.id} data-name={product.name}>
+        Add to cart
+      </button>
+      <p id="feedback" class="feedback" style="display:none">Added to cart</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const btn = document.getElementById("add-to-cart") as HTMLButtonElement;
+  const feedback = document.getElementById("feedback") as HTMLElement;
+
+  btn.addEventListener("click", () => {
+    const productId = Number(btn.dataset.id);
+    const raw = sessionStorage.getItem("cart");
+    const cart: { id: number; qty: number }[] = raw ? JSON.parse(raw) : [];
+
+    const existing = cart.find((item) => item.id === productId);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ id: productId, qty: 1 });
+    }
+
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cart-updated"));
+
+    feedback.style.display = "block";
+    setTimeout(() => (feedback.style.display = "none"), 2000);
+  });
+</script>
+
+<style>
+  .back-link {
+    margin-bottom: 2rem;
+    display: inline-block;
+  }
+
+  .detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    min-height: 55vh;
+  }
+
+  .detail-img {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .detail-img img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .info h1 {
+    font-size: 1.6rem;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .desc {
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 0.9rem;
+  }
+
+  .price {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .feedback {
+    color: var(--accent);
+    font-size: 0.85rem;
+  }
+</style>

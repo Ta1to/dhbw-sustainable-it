@@ -1,17 +1,57 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import { products } from "../lib/products";
 
+const featured = products[0];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="astro — Shop">
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Spring Collection</h1>
+      <p>Discover our hand-picked selection of premium tech accessories and everyday essentials.</p>
+      <a href="/products" class="btn btn-primary">Explore</a>
+    </div>
+    <div class="hero-img">
+      <img src={featured.image} alt={featured.name} />
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    min-height: 65vh;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .hero-text h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  .hero-text p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 36ch;
+  }
+
+  .hero-img img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: var(--radius);
+    display: block;
+  }
+</style>
