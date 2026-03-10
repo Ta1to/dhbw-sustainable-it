@@ -1,2 +1,54 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+  let { data } = $props();
+</script>
+
+<div class="hero">
+  <div class="hero-text">
+    <h1>New Arrivals</h1>
+    <p>Shop the latest trends — carefully curated products for your lifestyle.</p>
+    <a href="/products" class="btn btn-primary">Shop Now</a>
+  </div>
+  <div class="hero-img">
+    {#if data.featured}
+      <img src={data.featured.image} alt={data.featured.name} />
+    {/if}
+  </div>
+</div>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    min-height: 65vh;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .hero-text h1 { 
+    font-size: 2.8rem; 
+    font-weight: 700; 
+    line-height: 1.1; 
+    margin: 0; 
+  }
+
+  .hero-text p { 
+    color: var(--muted); 
+    font-size: 0.95rem; 
+    line-height: 1.6; 
+    max-width: 36ch; 
+  }
+
+  .hero-img img { 
+    width: 100%; 
+    aspect-ratio: 4/3; 
+    object-fit: cover; 
+    border-radius: var(--radius); 
+    display: block; 
+  }
+</style>
