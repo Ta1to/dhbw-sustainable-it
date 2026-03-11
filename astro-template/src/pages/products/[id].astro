@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getProductById } from "../../lib/products";
+import AddToCartButton from "../../components/AddToCartButton.vue";
 
 const { id } = Astro.params;
 const product = getProductById(Number(id));
@@ -18,37 +19,10 @@ if (!product) return Astro.redirect("/");
       <h1>{product.name}</h1>
       <p class="desc">{product.description}</p>
       <p class="price">{product.price.toFixed(2)}€</p>
-      <button class="btn btn-primary" id="add-to-cart" data-id={product.id} data-name={product.name}>
-        Add to cart
-      </button>
-      <p id="feedback" class="feedback" style="display:none">Added to cart</p>
+      <AddToCartButton client:visible productId={product.id} />
     </div>
   </div>
 </Layout>
-
-<script>
-  import { getCart, saveCart } from "../../lib/cart";
-
-  const btn = document.getElementById("add-to-cart") as HTMLButtonElement;
-  const feedback = document.getElementById("feedback") as HTMLElement;
-
-  btn.addEventListener("click", () => {
-    const productId = Number(btn.dataset.id);
-    const cart = getCart();
-
-    const existing = cart.find((item) => item.id === productId);
-    if (existing) {
-      existing.qty += 1;
-    } else {
-      cart.push({ id: productId, qty: 1 });
-    }
-
-    saveCart(cart);
-
-    feedback.style.display = "block";
-    setTimeout(() => (feedback.style.display = "none"), 2000);
-  });
-</script>
 
 <style>
   .back-link {

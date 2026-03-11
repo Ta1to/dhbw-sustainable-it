@@ -1,4 +1,6 @@
 ---
+import CartBadge from '../components/CartBadge.vue';
+
 interface Props {
   title?: string;
 }
@@ -20,30 +22,13 @@ const { title = "Shop" } = Astro.props;
         <a href="/">home</a>
         <a href="/products">products</a>
       </div>
-      <a href="/cart" class="cart-link" id="cart-link">
-        cart<span id="cart-badge" class="badge" style="display:none">0</span>
-      </a>
+      <CartBadge client:load />
     </nav>
 
     <main>
       <slot />
     </main>
 
-    <script>
-      import { getCart } from "../lib/cart";
-
-      function updateBadge() {
-        const cart = getCart();
-        const total = cart.reduce((sum, item) => sum + item.qty, 0);
-        const badge = document.getElementById("cart-badge");
-        if (badge) {
-          badge.textContent = String(total);
-          badge.style.display = total > 0 ? "inline-block" : "none";
-        }
-      }
-      updateBadge();
-      window.addEventListener("cart-updated", updateBadge);
-    </script>
   </body>
 </html>
 

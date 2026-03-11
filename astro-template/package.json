@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.5.4",
+    "@astrojs/vue": "^5.1.4",
     "astro": "^5.17.1",
-    "better-sqlite3": "^12.6.2"
+    "better-sqlite3": "^12.6.2",
+    "vue": "^3.5.30"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
