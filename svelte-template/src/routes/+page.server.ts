@@ -1,6 +1,5 @@
-import { getProducts } from "$lib/products";
+import { getProductById } from "$lib/products";
 
 export function load() {
-  const products = getProducts();
-  return { featured: products[2] };
+  return { featured: getProductById(3) };
 }

@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { getProducts } from "./lib/products";
+import { getProductById } from "./lib/products";
 
 export default function Home() {
-  const products = getProducts();
-  const featured = products[2];
+  const featured = getProductById(3);
 
   return (
     <div className="hero">

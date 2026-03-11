@@ -1,9 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getProducts } from "../lib/products";
+import { getProductById } from "../lib/products";
 
-const products = getProducts();
-const featured = products[2];
+const featured = getProductById(3);
 ---
 
 <Layout title="astro — Shop">
