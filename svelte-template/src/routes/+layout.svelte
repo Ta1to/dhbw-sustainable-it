@@ -22,6 +22,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Shop the latest trends — carefully curated products for your lifestyle." />
+  <link rel="icon" type="image/png" href="/favicon.png" />
 </svelte:head>
 
 <nav>
