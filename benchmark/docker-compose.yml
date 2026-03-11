@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  # Scaphandre
+  scaphandre:
+    image: hubblo/scaphandre:latest
+    container_name: scaphandre
+    privileged: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - /proc:/proc
+      - /sys/class/powercap:/sys/class/powercap
+    command: ["prometheus"]
+    restart: unless-stopped
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - scaphandre
+    restart: unless-stopped
+
+  # Grafana 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Framework-Server
+  astro-server:
+    build:
+      context: ..
+      dockerfile: benchmark/astro-server/Dockerfile
+    container_name: astro-server
+    ports:
+      - "4321:4321"
+    restart: unless-stopped
+
+  next-server:
+    build:
+      context: ..
+      dockerfile: benchmark/next-server/Dockerfile
+    container_name: next-server
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  svelte-server:
+    build:
+      context: ..
+      dockerfile: benchmark/svelte-server/Dockerfile
+    container_name: svelte-server
+    ports:
+      - "5173:5173"
+    restart: unless-stopped
