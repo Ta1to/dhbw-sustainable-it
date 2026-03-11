@@ -13,7 +13,7 @@ RUN npm install
 
 COPY ../../astro-template/ ./
 
-RUN cp ./database/*.db ./data/ 2>/dev/null || cp ./database/*.db . 2>/dev/null || true
+ENV DATABASE_PATH=/app/database/shop.db
 
 RUN npm run build
 

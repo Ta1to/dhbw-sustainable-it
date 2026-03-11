@@ -63,5 +63,5 @@ services:
       dockerfile: benchmark/svelte-server/Dockerfile
     container_name: svelte-server
     ports:
-      - "5173:5173"
+      - "5173:3000"
     restart: unless-stopped

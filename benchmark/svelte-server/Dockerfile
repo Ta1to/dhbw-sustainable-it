@@ -11,8 +11,9 @@ COPY svelte-template/package*.json ./
 RUN npm install
 COPY svelte-template/ ./
 
-RUN cp ./database/*.db ./data/ 2>/dev/null || cp ./database/*.db . 2>/dev/null || true
+ENV DATABASE_PATH=/app/database/shop.db
 
+RUN npx svelte-kit sync
 RUN npm run build
 
 EXPOSE 5173
