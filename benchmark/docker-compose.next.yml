@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   pushgateway:
     image: prom/pushgateway:latest
@@ -9,14 +7,12 @@ services:
     restart: unless-stopped
 
   prometheus:
-    image: prom/prometheus:latest
+    build:
+      context: .
+      dockerfile: prometheus.Dockerfile
     container_name: prometheus
     ports:
       - "9090:9090"
-    volumes:
-      - type: bind
-        source: ./prometheus.yml
-        target: /etc/prometheus/prometheus.yml
     depends_on:
       - pushgateway
     restart: unless-stopped

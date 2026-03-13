@@ -1,7 +1,5 @@
-version: "3.8"
-
 services:
-  # ── Pushgateway (empfängt Metriken von Scaphandre) ──
+  # ── Pushgateway (empfängt Metriken von Scaphandre Windows-Service) ──
   pushgateway:
     image: prom/pushgateway:latest
     container_name: pushgateway
@@ -11,14 +9,12 @@ services:
 
   # ── Prometheus ──
   prometheus:
-    image: prom/prometheus:latest
+    build:
+      context: .
+      dockerfile: prometheus.Dockerfile
     container_name: prometheus
     ports:
       - "9090:9090"
-    volumes:
-      - type: bind
-        source: ./prometheus.yml
-        target: /etc/prometheus/prometheus.yml
     depends_on:
       - pushgateway
     restart: unless-stopped
@@ -35,7 +31,7 @@ services:
       - prometheus
     restart: unless-stopped
 
-  # ── Framework-Server ──
+  # ── Astro Server ──
   astro-server:
     build:
       context: ..
@@ -45,6 +41,7 @@ services:
       - "4321:4321"
     restart: unless-stopped
 
+  # ── Next Server ──
   next-server:
     build:
       context: ..
@@ -54,6 +51,7 @@ services:
       - "3000:3000"
     restart: unless-stopped
 
+  # ── Svelte Server ──
   svelte-server:
     build:
       context: ..
