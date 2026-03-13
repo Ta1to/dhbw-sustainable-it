@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-  # ── Pushgateway (empfängt Metriken von Scaphandre) ──
   pushgateway:
     image: prom/pushgateway:latest
     container_name: pushgateway
@@ -9,7 +8,6 @@ services:
       - "9091:9091"
     restart: unless-stopped
 
-  # ── Prometheus ──
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -23,7 +21,6 @@ services:
       - pushgateway
     restart: unless-stopped
 
-  # ── Grafana ──
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -35,7 +32,6 @@ services:
       - prometheus
     restart: unless-stopped
 
-  # ── Framework-Server ──
   astro-server:
     build:
       context: ..
@@ -43,22 +39,4 @@ services:
     container_name: astro-server
     ports:
       - "4321:4321"
-    restart: unless-stopped
-
-  next-server:
-    build:
-      context: ..
-      dockerfile: benchmark/next-server/Dockerfile
-    container_name: next-server
-    ports:
-      - "3000:3000"
-    restart: unless-stopped
-
-  svelte-server:
-    build:
-      context: ..
-      dockerfile: benchmark/svelte-server/Dockerfile
-    container_name: svelte-server
-    ports:
-      - "5173:5173"
     restart: unless-stopped

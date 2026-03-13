@@ -2,18 +2,8 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: "scaphandre"
+  # Scaphandre Metriken über Pushgateway
+  - job_name: "pushgateway"
+    honor_labels: true
     static_configs:
-      - targets: ["scaphandre:8080"]
-
-  - job_name: "astro-server"
-    static_configs:
-      - targets: ["astro-server:4321"]
-
-  - job_name: "next-server"
-    static_configs:
-      - targets: ["next-server:3000"]
-
-  - job_name: "svelte-server"
-    static_configs:
-      - targets: ["svelte-server:5173"]
+      - targets: ["pushgateway:9091"]

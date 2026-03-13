@@ -1,4 +1,7 @@
 FROM node:20-alpine
+
+RUN apk add --no-cache python3 make g++
+
 WORKDIR /app
 
 COPY database/package*.json ./database/
@@ -17,4 +20,5 @@ RUN npx svelte-kit sync
 RUN npm run build
 
 EXPOSE 5173
+ENV PORT=5173
 CMD ["node", "build"]
