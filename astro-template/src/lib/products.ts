@@ -4,9 +4,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = process.env.DATABASE_PATH
-  ? path.resolve(process.env.DATABASE_PATH)
-  : path.resolve("database/shop.db");
+const dbPath = path.resolve(__dirname, "../../../database/shop.db");
 const db = new Database(dbPath, { readonly: true });
 
 export interface Product {
