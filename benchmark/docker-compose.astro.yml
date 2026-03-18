@@ -1,0 +1,38 @@
+services:
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: pushgateway
+    ports:
+      - "9091:9091"
+    restart: unless-stopped
+
+  prometheus:
+    build:
+      context: .
+      dockerfile: prometheus.Dockerfile
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - pushgateway
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  astro-server:
+    build:
+      context: ..
+      dockerfile: benchmark/astro-server/Dockerfile
+    container_name: astro-server
+    ports:
+      - "4321:4321"
+    restart: unless-stopped
